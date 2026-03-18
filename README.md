@@ -1,36 +1,191 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Empezando con Next.js (React evolucionado)
 
-## Getting Started
+## 1. Estructura básica de archivos recomendada
 
-First, run the development server:
+Dando por hecho que queremos tres páginas: Inicio, Contacto y Servicios.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+├── public/                                     # Se utiliza sobretodo para imágenes y otro tipo de archivos (pdf, etc...)
+│
+└── src/                                        # Carpeta principal del proyecto dónde se encuentran todos los archivos
+    ├── app/                                    # Carpeta específica donde se van a encontrar las páginas, actúa como el router donde cada carpeta
+    |   |                                         con un page.jsx dentro simboliza una ruta (endpoint)
+    │   ├── layout.jsx                          # Equivalente al index.html: llamada a la hoja de estilos globales, etiquetas meta, el título
+    |   |                                         de la página, importación de fuentes de texto externas, lo más importante: componentes que se
+    |   |                                         verán en toda la web (Navbar, footer).
+    │   ├── page.jsx                            # Equivalente al index.html también: la página de Inicio
+    │   ├── globals.css                         # Hoja de estilos globales
+    │   ├── favicon.ico                         # Bastante explicativo ya por el nombre
+    │   ├── contacto/page.jsx                   # Página de contacto: Accediento a url.com/contacto; esta ruta devolvería lo que hay en page.jsx
+    │   └── servicios/page.jsx                  # Página de servicios: Accediento a url.com/servicios; esta ruta devolvería lo que hay en page.jsx
+    ├── components/                             # Carpeta específica donde se encontrarán los componentes utilizados en cualquiera de las páginas
+    |   ├── Navbar.jsx
+    |   ├── Footer.jsx
+    │   └── etc...
+    └── assets
+        ├── styles/Navbar.module.css            # Módulos CSS para Navbar (y demás componentes y páginas)
+        └── data/Navbar.json                    # Archivos json u otro tipo de archivos que representen datos que van a ser consumidos por los componentes
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 2. Hoja de estilos globales vs módulos CSS
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+Podemos elegir entre usar estilos globales (`globals.css`) y módulos, cada una se accede se maneras distintas e incluso podemos acceder a las dos en un mismo elemento de HTML.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 2.1. Acceso a estilos globales
 
-## Learn More
+Dando por hecho que dentro de `globals.css` tenemos una clase llamada "contenedor":
 
-To learn more about Next.js, take a look at the following resources:
+```
+    <div className="contenedor"></div>
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 2.2. Acceso a módulos CSS
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Los módulos CSS son específicos de Next.js. En ellos, no se pueden hacer referencias a etiquetas HTML ni id, tienen que ser específicamente clases. Tampoco se pueden utilizar `-` ni `_` en los nombres de las clases. Recomendación: utilizar camelCase.
 
-## Deploy on Vercel
+```
+    import styles from "@/assets/styles/Navbar.module.css";
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+    export const Navbar = () => {
+        return (
+            <header>
+                <nav className={styles.contenedor}>
+                    <ul></ul>
+                </nav>
+            </header>
+        );
+    };
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 2.3. Acceso a los dos en una misma etiqueta HTML
+
+Utilizando plantillas literales (template literals). Esto no daría problemas, una viene por estilos globales y otra por el módulo CSS importado.
+
+```
+    import styles from "@/assets/styles/Navbar.module.css";
+
+    export const Navbar = () => {
+        return (
+            <header>
+                <nav className=`contenedor ${styles.contenedor}`>
+                    <ul></ul>
+                </nav>
+            </header>
+        );
+    };
+```
+
+## 3. Estructura básica de un componente
+
+Podemos definirlo como una "Arrow Function":
+
+```
+    export const Navbar = () => {
+        return (
+            <header>
+                <nav className={styles.contenedor}>
+                    <ul></ul>
+                </nav>
+            </header>
+        );
+    };
+```
+
+O podemos definirlo como una función:
+
+```
+    export function Navbar() {
+        return (
+            <header>
+                <nav className={styles.contenedor}>
+                    <ul></ul>
+                </nav>
+            </header>
+        );
+    };
+```
+
+Ambos consiguen el mismo resultado. Al importar este componente en una página u otro componente, devolverá el contenido que hay dentro de `return`. Hay que tener en cuenta que se comportan como funciones, o sea que podríamos tener varios `return` con distintas condiciones.
+
+### 3.1. Componentes sin children
+
+En el caso de arriba, Navbar no acepta ningún children, al importarlo en nuestro `layout.jsx` lo llamaremos dentro de una etiqueta que se cierra sobre si misma:
+
+```
+    import { Navbar } from "@/components/navbar/Navbar";
+
+    export default function RootLayout({ children }) {
+        return (
+            <html lang="en">
+                <body className={inter.variable}>
+                    <Navbar />                      <---- Se cierra sobre si mismo.
+                    {children}
+                </body>
+            </html>
+        );
+    }
+```
+
+### 3.2. Componentes con children
+
+Tenemos que pasarle por props (es decir, dentro del paréntesis) un objeto con el nombre children en específico:
+
+```
+    export const Card = ({ children }) => {
+        return <div className={styles.contenedor}>{children}</div>;
+    };
+```
+
+Al importar este componente, estamos obligados a referenciarlo como dos etiquetas, una de apertura y otra de cierre:
+
+```
+    import { Card } from "@/components/card/Card";
+
+    export default function Home() {
+        return (
+            <main>
+                <Card>                              <---- Etiqueta de apertura
+                    <p>Algo que quiero mostrar</p>  <---- Children, podemos pasarle todos los que queramos
+                </Card>                             <---- Etiqueta de cierre
+            </main>
+        );
+    }
+```
+
+### 3.3. Componentes con props
+
+Podemos tener todos los props que queremos. En este caso sería un único prop, además de `children`, con el nombre `title`:
+
+```
+    export const Card = ({ children, title }) => {
+        return (
+            <div>
+                <h2>{title}</h2>
+                {children}
+            </div>
+        );
+    };
+```
+
+Al importar este componente, debemos pasarle en su etiqueta de apertura la prop con el nombre `title` en específico:
+
+```
+    import { Card } from "@/components/card/Card";
+
+    export default function Home() {
+        const cardTitle = "Hola!";
+
+        return (
+            <main>
+                <Card title={cardTitle}>
+                    <p>
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                        Omnis quibusdam expedita ipsam consequuntur minus esse
+                        minima ab. Doloribus nemo quasi ducimus distinctio animi
+                        provident, numquam eveniet! Cum corporis veritatis aperiam.
+                    </p>
+                </Card>
+            </main>
+        );
+    }
+```

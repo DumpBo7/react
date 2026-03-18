@@ -1,0 +1,26 @@
+[
+    {
+        "id": 0,
+        "label": "Inicio",
+        "href": "/",
+        "type": "navigation"
+    },
+    {
+        "id": 1,
+        "label": "Carta",
+        "href": "/carta",
+        "type": "navigation"
+    },
+    {
+        "id": 2,
+        "label": "Contacto",
+        "href": "/contacto",
+        "type": "navigation"
+    },
+    {
+        "id": 3,
+        "label": "GitHub",
+        "href": "https://github.com/ricocatford",
+        "type": "social"
+    }
+]

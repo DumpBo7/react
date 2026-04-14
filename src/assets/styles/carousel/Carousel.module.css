@@ -1,0 +1,16 @@
+.circle {
+    height: 18px;
+    width: 18px;
+    background: red;
+    opacity: 0.6;
+    border-radius: 50%;
+}
+
+.active {
+    opacity: 1;
+}
+
+.container {
+    display: flex;
+    gap: 1rem;
+}

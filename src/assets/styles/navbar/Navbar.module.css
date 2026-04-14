@@ -1,0 +1,11 @@
+.contenedor {
+    display: flex;
+    justify-content: space-between;
+    padding: 2rem;
+}
+
+.linksList {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+}

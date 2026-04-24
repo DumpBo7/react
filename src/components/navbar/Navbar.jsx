@@ -3,7 +3,6 @@ import data from "@/assets/data/nav.json";
 import Link from "next/link";
 
 export const Navbar = () => {
-    console.log(data);
     return (
         <header>
             <nav className={styles.contenedor}>

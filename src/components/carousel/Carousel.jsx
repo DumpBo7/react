@@ -1,7 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import styles from "@/assets/styles/carousel/Carousel.module.css";
+import React from "react";
+import useEmblaCarousel from "embla-carousel-react";
+import {
+    NextButton,
+    PrevButton,
+    usePrevNextButtons,
+} from "./CarouselArrowButtons";
+import { DotButton, useDotButton } from "./CarouselDotButton";
 
 const projects = [
     {
@@ -100,65 +106,62 @@ const projects = [
     },
 ];
 
-export default function Carousel() {
-    const [activeIndex, setActiveIndex] = useState(0);
+const EmblaCarousel = (props) => {
+    const { options } = props;
+    const [emblaRef, emblaApi] = useEmblaCarousel(options);
 
-    const [touchStart, setTouchStart] = useState(null);
-    const [touchEnd, setTouchEnd] = useState(null);
+    const { selectedIndex, scrollSnaps, onDotButtonClick } =
+        useDotButton(emblaApi);
 
-    const minSwipeDistance = 50;
-
-    const onTouchStart = (e) => {
-        setTouchEnd(null);
-        setTouchStart(e.targetTouches[0].clientX);
-    };
-
-    const onTouchMove = (e) => {
-        setTouchEnd(e.targetTouches[0].clientX);
-    };
-
-    const onTouchEnd = () => {
-        if (!touchStart || !touchEnd) return;
-
-        const distance = touchStart - touchEnd;
-        const isLeftSwipe = distance > minSwipeDistance;
-        const isRightSwipe = distance < -minSwipeDistance;
-
-        if (isLeftSwipe) {
-            setActiveIndex((prev) =>
-                prev === projects.length - 1 ? 0 : prev + 1
-            );
-        } else if (isRightSwipe) {
-            setActiveIndex((prev) =>
-                prev === 0 ? projects.length - 1 : prev - 1
-            );
-        }
-    };
+    const {
+        prevBtnDisabled,
+        nextBtnDisabled,
+        onPrevButtonClick,
+        onNextButtonClick,
+    } = usePrevNextButtons(emblaApi);
 
     return (
-        <div
-            onTouchStart={onTouchStart}
-            onTouchMove={onTouchMove}
-            onTouchEnd={onTouchEnd}
-            style={{ touchAction: "none" }}
-        >
-            <div>
-                {projects.map(
-                    (project, index) =>
-                        index === activeIndex && (
-                            <span key={project.id}>{project.name}</span>
-                        )
-                )}
+        <div className="embla">
+            <div className="embla__viewport" ref={emblaRef}>
+                <div className="embla__container">
+                    {projects.map((project) => (
+                        <div className="embla__slide" key={project.id}>
+                            <div className="embla__slide__number">
+                                <span>{project.id + 1}</span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
-            <div className={styles.container}>
-                {projects.map((project, index) => (
-                    <div
-                        key={project.id}
-                        className={`${styles.circle} ${activeIndex === index ? styles.active : ""}`}
-                        onClick={() => setActiveIndex(index)}
-                    ></div>
-                ))}
+
+            <div className="embla__controls">
+                <div className="embla__buttons">
+                    <PrevButton
+                        onClick={onPrevButtonClick}
+                        disabled={prevBtnDisabled}
+                    />
+                    <NextButton
+                        onClick={onNextButtonClick}
+                        disabled={nextBtnDisabled}
+                    />
+                </div>
+
+                <div className="embla__dots">
+                    {scrollSnaps.map((_, index) => (
+                        <DotButton
+                            key={index}
+                            onClick={() => onDotButtonClick(index)}
+                            className={"embla__dot".concat(
+                                index === selectedIndex
+                                    ? " embla__dot--selected"
+                                    : ""
+                            )}
+                        />
+                    ))}
+                </div>
             </div>
         </div>
     );
-}
+};
+
+export default EmblaCarousel;

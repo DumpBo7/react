@@ -1,9 +1,14 @@
 .circle {
     height: 18px;
     width: 18px;
-    background: red;
-    opacity: 0.6;
+    background: #fff;
     border-radius: 50%;
+    border: none;
+    cursor: pointer;
+}
+
+.dots {
+    gap: 1rem;
 }
 
 .active {

@@ -154,8 +154,8 @@ a {
 
 .embla__dot:before,
 .embla__dot:after {
-    width: 1.4rem;
-    height: 1.4rem;
+    width: 0.8rem;
+    height: 0.8rem;
 
     border-radius: 50%;
     position: absolute;

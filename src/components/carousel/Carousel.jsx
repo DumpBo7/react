@@ -8,6 +8,7 @@ import {
     usePrevNextButtons,
 } from "./CarouselArrowButtons";
 import { DotButton, useDotButton } from "./CarouselDotButton";
+import styles from "../../assets/styles/carousel/Carousel.module.css";
 
 const projects = [
     {
@@ -146,7 +147,7 @@ const EmblaCarousel = (props) => {
                     />
                 </div>
 
-                <div className="embla__dots">
+                <div className={`embla__dots ${styles.dots}`}>
                     {scrollSnaps.map((_, index) => (
                         <DotButton
                             key={index}
